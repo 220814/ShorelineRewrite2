@@ -71,7 +71,7 @@ public final class ModuleManager
                 // new SelfWebModule(),
                 new SurroundModule(),
                 new TriggerModule(),
-                new AutoPot(),
+                new AutoPotModule(),
                 // Exploit
                 new AntiHungerModule(),
                 new BacktrackModule(),
