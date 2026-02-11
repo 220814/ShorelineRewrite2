@@ -25,15 +25,21 @@ public class AutoPotModule extends ToggleModule {
     private final Config<Integer> delayConfig = new NumberConfig<>("Delay", "Ticks between pots", 1, 1, 10);
     private final Config<Integer> thresholdConfig = new NumberConfig<>("Threshold", "Duration ticks left to pot", 20, 0, 100);
     private final Config<Double> enemyCheckConfig = new NumberConfig<>("EnemyCheck", "Aborts if enemy in range", 0.11, 0.0, 1.0);
-    private final Config<Boolean> silentRotationConfig = new BooleanConfig("SilentRotation", "Don't move your screen while potting", true);
+    private final Config<Boolean> silentRotationConfig = new BooleanConfig("SilentRotation", "Server-side only rotation", true);
 
     private int potDelay;
 
     public AutoPotModule() {
-        super("AutoPot", "Automatic potion thrower with environmental checks", ModuleCategory.COMBAT);
+        super("AutoPot", "Automatically throws potions", ModuleCategory.COMBAT);
+        addConfig(modeConfig);
+        addConfig(totemForceConfig);
+        addConfig(delayConfig);
+        addConfig(thresholdConfig);
+        addConfig(enemyCheckConfig);
+        addConfig(silentRotationConfig);
     }
 
-    private enum Mode { STRENGTH, SLOWNESS, BOTH }
+    private enum Mode { STRENGTH, TURTLE, BOTH }
 
     @EventListener
     public void onPlayerUpdate(PlayerUpdateEvent event) {
@@ -57,9 +63,9 @@ public class AutoPotModule extends ToggleModule {
             }
         }
 
-        if (modeConfig.getValue() == Mode.SLOWNESS || modeConfig.getValue() == Mode.BOTH) {
-            if (force || PotionLogicUtil.shouldPot(StatusEffects.SLOWNESS, thresholdConfig.getValue())) {
-                executePotting("Slowness");
+        if (modeConfig.getValue() == Mode.TURTLE || modeConfig.getValue() == Mode.BOTH) {
+            if (force || PotionLogicUtil.shouldPot(StatusEffects.RESISTANCE, thresholdConfig.getValue())) {
+                executePotting("Turtle");
             }
         }
     }
@@ -86,11 +92,11 @@ public class AutoPotModule extends ToggleModule {
             ItemStack stack = mc.player.getInventory().getStack(i);
             if (stack.getItem() == Items.SPLASH_POTION) {
                 String name = stack.getName().getString().toLowerCase();
-                if (name.contains(type.toLowerCase())) return i;
+                if (type.equals("Turtle") && (name.contains("turtle") || name.contains("master"))) return i;
+                if (type.equals("Strength") && name.contains("strength")) return i;
             }
         }
         return -1;
     }
 }
-
-            
+        
