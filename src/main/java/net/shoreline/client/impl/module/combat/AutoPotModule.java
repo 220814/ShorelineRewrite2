@@ -13,6 +13,7 @@ import net.shoreline.client.api.module.ToggleModule;
 import net.shoreline.client.impl.event.network.PlayerUpdateEvent;
 import net.shoreline.client.impl.manager.player.rotation.Rotation;
 import net.shoreline.client.init.Managers;
+import net.shoreline.client.util.chat.ChatUtil;
 import net.shoreline.client.util.player.PotionLogicUtil;
 import net.shoreline.client.util.world.PositionUtil;
 import net.shoreline.eventbus.annotation.EventListener;
@@ -29,7 +30,7 @@ public class AutoPotModule extends ToggleModule {
     private int potDelay;
 
     public AutoPotModule() {
-        super("AutoPot", "Automatic potion thrower", ModuleCategory.COMBAT);
+        super("AutoPot", "Automatic potion thrower with environmental checks", ModuleCategory.COMBAT);
     }
 
     private enum Mode { STRENGTH, SLOWNESS, BOTH }
@@ -76,7 +77,7 @@ public class AutoPotModule extends ToggleModule {
         mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
         Managers.INVENTORY.setSlot(oldSlot);
 
-        sendMessage("Potting " + type + "!");
+        ChatUtil.clientSendMessage("Threw §s" + type + " §rpotion.");
         potDelay = delayConfig.getValue();
     }
 
