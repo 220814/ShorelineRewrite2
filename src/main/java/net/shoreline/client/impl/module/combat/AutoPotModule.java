@@ -19,24 +19,19 @@ import net.shoreline.client.util.world.PositionUtil;
 import net.shoreline.eventbus.annotation.EventListener;
 
 public class AutoPotModule extends ToggleModule {
-
-    private final Config<Mode> modeConfig = new EnumConfig<>("Mode", "Potion type", Mode.BOTH, Mode.values());
-    private final Config<Boolean> totemForceConfig = new BooleanConfig("TotemForce", "Immediate re-pot on pop", true);
-    private final Config<Integer> delayConfig = new NumberConfig<>("Delay", "Ticks between pots", 1, 1, 10);
-    private final Config<Integer> thresholdConfig = new NumberConfig<>("Threshold", "Duration ticks left to pot", 20, 0, 100);
-    private final Config<Double> enemyCheckConfig = new NumberConfig<>("EnemyCheck", "Aborts if enemy in range", 0.11, 0.0, 1.0);
-    private final Config<Boolean> silentRotationConfig = new BooleanConfig("SilentRotation", "Server-side only rotation", true);
+    // Chuyen sang public va xoa addConfig trong constructor nhu AutoCrystal
+    public final Config<Mode> modeConfig = new EnumConfig<>("Mode", "Potion type", Mode.BOTH, Mode.values());
+    public final Config<Boolean> totemForceConfig = new BooleanConfig("TotemForce", "Immediate re-pot on pop", true);
+    public final Config<Integer> delayConfig = new NumberConfig<>("Delay", "Ticks between pots", 1, 1, 10);
+    public final Config<Integer> thresholdConfig = new NumberConfig<>("Threshold", "Duration ticks left to pot", 20, 0, 100);
+    public final Config<Double> enemyCheckConfig = new NumberConfig<>("EnemyCheck", "Aborts if enemy in range", 0.11, 0.0, 1.0);
+    public final Config<Boolean> silentRotationConfig = new BooleanConfig("SilentRotation", "Server-side only rotation", true);
 
     private int potDelay;
 
     public AutoPotModule() {
         super("AutoPot", "Automatically throws potions", ModuleCategory.COMBAT);
-        addConfig(modeConfig);
-        addConfig(totemForceConfig);
-        addConfig(delayConfig);
-        addConfig(thresholdConfig);
-        addConfig(enemyCheckConfig);
-        addConfig(silentRotationConfig);
+        // Khong goi addConfig o day nua
     }
 
     private enum Mode { STRENGTH, TURTLE, BOTH }
@@ -99,4 +94,4 @@ public class AutoPotModule extends ToggleModule {
         return -1;
     }
 }
-        
+    
