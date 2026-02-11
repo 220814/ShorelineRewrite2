@@ -11,7 +11,6 @@ import net.shoreline.client.api.config.setting.NumberConfig;
 import net.shoreline.client.api.module.ModuleCategory;
 import net.shoreline.client.api.module.ToggleModule;
 import net.shoreline.client.impl.event.network.PlayerUpdateEvent;
-import net.shoreline.client.impl.manager.player.rotation.Rotation;
 import net.shoreline.client.init.Managers;
 import net.shoreline.client.util.chat.ChatUtil;
 import net.shoreline.client.util.player.PotionLogicUtil;
@@ -62,7 +61,6 @@ public class AutoPotModule extends ToggleModule {
             }
         }
 
-        // liquid check
         if (!inLiquid && (modeConfig.getValue() == Mode.TURTLE || modeConfig.getValue() == Mode.BOTH)) {
             if (force || PotionLogicUtil.shouldPot(StatusEffects.RESISTANCE, thresholdConfig.getValue())) {
                 executePotting("Turtle", false);
@@ -73,9 +71,10 @@ public class AutoPotModule extends ToggleModule {
     private boolean executePotting(String type, boolean inLiquid) {
         int slot = getPotSlot(type);
         if (slot == -1) return false;
+
         float pitch = inLiquid ? 85.0f : 90.0f;
-        Rotation potRotation = new Rotation(Integer.MAX_VALUE, mc.player.getYaw(), pitch, true);
-        Managers.ROTATION.setRotation(potRotation);
+        
+        Managers.ROTATION.setRotationSilent(mc.player.getYaw(), pitch);
 
         int oldSlot = mc.player.getInventory().selectedSlot;
         Managers.INVENTORY.setSlot(slot);
@@ -99,4 +98,4 @@ public class AutoPotModule extends ToggleModule {
         return -1;
     }
 }
-                               
+    
