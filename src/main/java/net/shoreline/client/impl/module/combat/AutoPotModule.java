@@ -42,8 +42,11 @@ public class AutoPotModule extends ToggleModule {
         if (PositionUtil.isMoving() || PositionUtil.isOverAir()) return;
 
         boolean inLiquid = mc.player.isInLava() || mc.player.isTouchingWater();
-        if ((!inLiquid || !liquidPotConfig.getValue()) && !mc.player.isOnGround()) return;
         
+        if (!inLiquid || !liquidPotConfig.getValue()) {
+            if (!mc.player.isOnGround()) return;
+        }
+
         if (PositionUtil.isEnemyInHole(enemyCheckConfig.getValue())) return;
 
         if (potDelay > 0) {
@@ -55,25 +58,23 @@ public class AutoPotModule extends ToggleModule {
 
         if (modeConfig.getValue() == Mode.STRENGTH || modeConfig.getValue() == Mode.BOTH) {
             if (force || PotionLogicUtil.shouldPot(StatusEffects.STRENGTH, thresholdConfig.getValue())) {
-                if (executePotting("Strength")) return;
+                if (executePotting("Strength", inLiquid)) return;
             }
         }
 
-        if (modeConfig.getValue() == Mode.TURTLE || modeConfig.getValue() == Mode.BOTH) {
+        // liquid check
+        if (!inLiquid && (modeConfig.getValue() == Mode.TURTLE || modeConfig.getValue() == Mode.BOTH)) {
             if (force || PotionLogicUtil.shouldPot(StatusEffects.RESISTANCE, thresholdConfig.getValue())) {
-                executePotting("Turtle");
+                executePotting("Turtle", false);
             }
         }
     }
 
-    private boolean executePotting(String type) {
+    private boolean executePotting(String type, boolean inLiquid) {
         int slot = getPotSlot(type);
         if (slot == -1) return false;
-
-        boolean inLiquid = mc.player.isInLava() || mc.player.isTouchingWater();
         float pitch = inLiquid ? 85.0f : 90.0f;
-
-        Rotation potRotation = new Rotation(100, mc.player.getYaw(), pitch, true);
+        Rotation potRotation = new Rotation(Integer.MAX_VALUE, mc.player.getYaw(), pitch, true);
         Managers.ROTATION.setRotation(potRotation);
 
         int oldSlot = mc.player.getInventory().selectedSlot;
@@ -97,6 +98,5 @@ public class AutoPotModule extends ToggleModule {
         }
         return -1;
     }
-  }
-                
-
+}
+                               
