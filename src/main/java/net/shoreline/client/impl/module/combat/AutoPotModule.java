@@ -22,10 +22,10 @@ public class AutoPotModule extends ToggleModule {
 
     Config<Mode> modeConfig = register(new EnumConfig<>("Mode", "Potion type", Mode.BOTH, Mode.values()));
     Config<Boolean> totemForceConfig = register(new BooleanConfig("TotemForce", "Immediate re-pot on pop", true));
+    Config<Boolean> liquidPotConfig = register(new BooleanConfig("LiquidPot", "Allow potting in water/lava", true));
     Config<Integer> delayConfig = register(new NumberConfig<>("Delay", "Ticks between pots", 1, 1, 10));
     Config<Integer> thresholdConfig = register(new NumberConfig<>("Threshold", "Duration ticks left to pot", 20, 0, 100));
     Config<Double> enemyCheckConfig = register(new NumberConfig<>("EnemyCheck", "Aborts if enemy in range", 0.11, 0.0, 1.0));
-    Config<Boolean> silentRotationConfig = register(new BooleanConfig("SilentRotation", "Server-side rotation", true));
 
     private int potDelay;
 
@@ -39,7 +39,17 @@ public class AutoPotModule extends ToggleModule {
     public void onPlayerUpdate(PlayerUpdateEvent event) {
         if (mc.player == null || mc.world == null) return;
 
-        if (PositionUtil.isMoving() || !PositionUtil.canThrowPot() || PositionUtil.isEnemyInHole(enemyCheckConfig.getValue())) {
+        if (PositionUtil.isMoving() || PositionUtil.isOverAir()) {
+            return;
+        }
+
+        boolean inLiquid = mc.player.isInLava() || mc.player.isTouchingWater();
+        
+        if (!inLiquid || !liquidPotConfig.getValue()) {
+            if (!mc.player.isOnGround()) return;
+        }
+        
+        if (PositionUtil.isEnemyInHole(enemyCheckConfig.getValue())) {
             return;
         }
 
@@ -68,7 +78,7 @@ public class AutoPotModule extends ToggleModule {
         int slot = getPotSlot(type);
         if (slot == -1) return;
 
-        Rotation potRotation = new Rotation(15, mc.player.getYaw(), 90.0f, !silentRotationConfig.getValue());
+        Rotation potRotation = new Rotation(15, mc.player.getYaw(), 90.0f, true);
         Managers.ROTATION.setRotation(potRotation);
 
         int oldSlot = mc.player.getInventory().selectedSlot;
@@ -93,5 +103,4 @@ public class AutoPotModule extends ToggleModule {
         return -1;
     }
 }
-
-        
+            
