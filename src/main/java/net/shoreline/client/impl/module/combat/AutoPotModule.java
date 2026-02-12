@@ -11,7 +11,6 @@ import net.shoreline.client.api.config.setting.NumberConfig;
 import net.shoreline.client.api.module.ModuleCategory;
 import net.shoreline.client.api.module.ToggleModule;
 import net.shoreline.client.impl.event.network.PlayerUpdateEvent;
-import net.shoreline.client.impl.manager.player.rotation.Rotation;
 import net.shoreline.client.init.Managers;
 import net.shoreline.client.util.chat.ChatUtil;
 import net.shoreline.client.util.player.PotionLogicUtil;
@@ -43,11 +42,8 @@ public class AutoPotModule extends ToggleModule {
 
         boolean inLiquid = mc.player.isInLava() || mc.player.isTouchingWater();
         
-        if (inLiquid) {
-            if (!liquidPotConfig.getValue()) return;
-        } else if (!mc.player.isOnGround()) {
-            return;
-        }
+        if (inLiquid && !liquidPotConfig.getValue()) return;
+        if (!inLiquid && !mc.player.isOnGround()) return;
 
         if (PositionUtil.isEnemyInHole(enemyCheckConfig.getValue())) return;
 
@@ -77,8 +73,7 @@ public class AutoPotModule extends ToggleModule {
 
         float pitch = inLiquid ? 85.0f : 90.0f;
         
-        Rotation potRotation = new Rotation(Integer.MAX_VALUE, mc.player.getYaw(), pitch, true);
-        Managers.ROTATION.setRotation(potRotation);
+        Managers.ROTATION.setRotationSilent(mc.player.getYaw(), pitch);
 
         int oldSlot = mc.player.getInventory().selectedSlot;
         Managers.INVENTORY.setSlot(slot);
@@ -102,5 +97,4 @@ public class AutoPotModule extends ToggleModule {
         return -1;
     }
 }
-      
-
+            
